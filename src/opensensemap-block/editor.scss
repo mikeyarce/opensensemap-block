@@ -1,0 +1,89 @@
+/**
+ * Editor styles for the opensensemap block
+ */
+
+.wp-block-opensensemap-block-opensensemap-block {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+
+  .sensor-data-block {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .sensor-data-header {
+    margin-bottom: 20px;
+
+    .sensor-data-location {
+      margin: 0 0 10px;
+      font-size: 1.5em;
+      font-weight: 600;
+    }
+
+    .sensor-data-timestamp {
+      font-size: 0.9em;
+      color: #555;
+    }
+  }
+
+  .sensor-data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .sensor-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    .sensor-title {
+      margin: 0;
+      font-size: 1.1em;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .sensor-value {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .sensor-icon {
+        color: #0073aa;
+
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .sensor-value-number {
+        font-size: 1.2em;
+        font-weight: 600;
+
+        .sensor-value-unit {
+          font-size: 0.8em;
+          color: #666;
+          margin-left: 4px;
+        }
+      }
+    }
+  }
+
+  // Loading state
+  .components-spinner {
+    margin: 20px auto;
+  }
+
+  // Error state
+  .components-notice {
+    margin: 20px 0;
+  }
+}

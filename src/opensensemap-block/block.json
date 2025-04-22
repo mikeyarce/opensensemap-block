@@ -1,0 +1,58 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "opensensemap-block/opensensemap-block",
+	"version": "0.1.0",
+	"title": "OpenSenseMap Block",
+	"category": "widgets",
+	"icon": "dashboard",
+	"description": "Displays sensor data from OpenSenseMap API.",
+	"keywords": ["sensor", "data", "api", "weather"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"textdomain": "opensensemap-block",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./frontend.js",
+	"attributes": {
+		"sensorBoxId": {
+			"type": "string",
+			"default": ""
+		},
+		"displayName": {
+			"type": "boolean",
+			"default": true
+		},
+		"displayDescription": {
+			"type": "boolean",
+			"default": true
+		},
+		"displayLastMeasurement": {
+			"type": "boolean",
+			"default": true
+		},
+		"displayLocation": {
+			"type": "boolean",
+			"default": true
+		},
+		"displayTimestamp": {
+			"type": "boolean",
+			"default": true
+		},
+		"refreshInterval": {
+			"type": "number",
+			"default": 300
+		}
+	},
+	"example": {
+		"attributes": {
+			"sensorBoxId": "sample-id",
+			"displayName": true,
+			"displayLocation": true,
+			"displayTimestamp": true
+		}
+	}
+}

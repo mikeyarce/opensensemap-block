@@ -1,0 +1,23 @@
+# Logs
+logs
+*.log
+
+# Build directories
+build/
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Optional eslint cache
+.eslintcache
+
+# Output of `wp-scripts plugin-zip`
+*.zip
+
+# dotenv environment variables file
+.env
+
+# OS generated files
+.DS_Store
+.DS_Store?
