@@ -1,55 +1,68 @@
 === Opensensemap Block ===
-Contributors:      The WordPress Contributors
-Tags:              block
-Tested up to:      6.7
+Contributors:      mikeyarce
+Tags:              block, weather, opensensemap, sensors, IoT
+Tested up to:      6.8
 Stable tag:        0.1.0
 License:           GPL-2.0-or-later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 
-Example block scaffolded with Create Block tool.
-
 == Description ==
 
-This is the long description. No limit, and you can use Markdown (as well as in the following sections).
+**Display live environmental sensor data from openSenseMap.org directly in your WordPress site**
 
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and
-Markdown parsed.
+openSenseMap is a citizen science platform for publishing and exploring sensor data as open data. Anyone can build their own sensor box (called a senseBox), register it on openSenseMap, and contribute to a global network of environmental measurements. Learn more at [openSenseMap.org](https://opensensemap.org/) and [About openSenseMap](https://opensensemap.org/about).
+
+Want to build your own sensor? Check out the [sensor.community guides](https://sensor.community/en/sensors/airrohr/).
+
+This plugin provides a custom WordPress block that lets you display live data from any openSenseMap sensor box by entering its Box ID. Perfect for schools, makers, weather enthusiasts, and anyone who wants to share real-time environmental data on their website.
+
+== Features ==
+
+* Display live sensor readings (temperature, humidity, air pressure, and more) from any openSenseMap box
+* Customizable display: show/hide sensor names, location, and last update time
+* Responsive, modern design
+* Easy to use – just add the block and enter a Box ID
+
+== How to Use ==
+
+1. Add the "OpenSenseMap Block" to any post or page using the WordPress block editor.
+2. In the block settings, enter the Sensor Box ID you want to display. (You can find this on [openSenseMap.org](https://opensensemap.org/) by selecting a box and copying its ID from the URL or details panel.)
+3. Choose which details to display: sensor names, location, and last update time.
+4. Publish or update your post/page. The block will show live data from the selected sensor box!
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
-
-e.g.
-
 1. Upload the plugin files to the `/wp-content/plugins/opensensemap-block` directory, or install the plugin through the WordPress plugins screen directly.
-1. Activate the plugin through the 'Plugins' screen in WordPress
-
+2. Activate the plugin through the 'Plugins' screen in WordPress.
 
 == Frequently Asked Questions ==
 
-= A question that someone might have =
+= Where do I find my Sensor Box ID? =
+Go to [openSenseMap.org](https://opensensemap.org/), select your sensor box, and copy the ID from the URL or the box details panel.
 
-An answer to that question.
+= Can I use multiple blocks for different sensor boxes? =
+Yes! You can add as many blocks as you like, each with a different Box ID.
 
-= What about foo bar? =
-
-Answer to foo bar dilemma.
+= How often does the data update? =
+The block fetches the latest data from openSenseMap and caches it for 5 minutes in a transient.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Example of the block displaying live sensor data
+2. Block settings in the editor
 
 == Changelog ==
 
 = 0.1.0 =
-* Release
+* Initial release
+
+== Links & Resources ==
+
+* openSenseMap: https://opensensemap.org/
+* About openSenseMap: https://opensensemap.org/about
+* Build your own sensor: https://sensebox.de/en/
+* Plugin author: https://mikeyarce.com
 
 == Arbitrary section ==
 
-You may provide arbitrary sections, in the same format as the ones above. This may be of use for extremely complicated
-plugins where more information needs to be conveyed that doesn't fit into the categories of "description" or
-"installation." Arbitrary sections will be shown below the built-in sections outlined above.
+openSenseMap and senseBox are open-source projects. Learn more and get involved at [openSenseMap GitHub](https://github.com/sensebox/openSenseMap-API) and [senseBox GitHub](https://github.com/sensebox).

@@ -1,11 +1,12 @@
 <?php
 /**
- * Plugin Name:       OpenSenseMap Block
- * Description:       Display sensor data from OpenSenseMap API.
+ * Plugin Name:       openSenseMap Block
+ * Description:       Display sensor data from the openSenseMap API
  * Version:           0.1.0
- * Requires at least: 6.7
+ * Requires at least: 6.8
  * Requires PHP:      7.4
- * Author:            The WordPress Contributors
+ * Author:            Mikey Arce
+ * Author URI:        https://mikeyarce.com
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       opensensemap-block
