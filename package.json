@@ -12,7 +12,8 @@
 		"lint:js": "wp-scripts lint-js",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"start": "wp-scripts start --blocks-manifest"
+		"start": "wp-scripts start --blocks-manifest",
+		"zip": "wp-scripts plugin-zip"
 	},
 	"devDependencies": {
 		"@wordpress/scripts": "^30.14.1"
