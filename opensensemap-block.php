@@ -15,44 +15,23 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+	exit;
 }
 
 /**
- * Registers the block using a `blocks-manifest.php` file, which improves the performance of block type registration.
- * Behind the scenes, it also registers all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
- * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
+ * Register block types.
  */
 function opensensemap_block_block_init() {
-	/**
-	 * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
-	 * based on the registered block metadata.
-	 * Added in WordPress 6.8 to simplify the block metadata registration process added in WordPress 6.7.
-	 *
-	 * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
-	 */
+
 	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 		wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
 		return;
 	}
 
-	/**
-	 * Registers the block(s) metadata from the `blocks-manifest.php` file.
-	 * Added to WordPress 6.7 to improve the performance of block type registration.
-	 *
-	 * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
-	 */
 	if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
 		wp_register_block_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
 	}
-	/**
-	 * Registers the block type(s) in the `blocks-manifest.php` file.
-	 *
-	 * @see https://developer.wordpress.org/reference/functions/register_block_type/
-	 */
+
 	$manifest_data = require __DIR__ . '/build/blocks-manifest.php';
 	foreach ( array_keys( $manifest_data ) as $block_type ) {
 		register_block_type( __DIR__ . "/build/{$block_type}" );
@@ -61,12 +40,10 @@ function opensensemap_block_block_init() {
 add_action( 'init', 'opensensemap_block_block_init' );
 
 /**
- * Enqueue frontend scripts for the block
+ * Enqueue scripts.
  */
 function opensensemap_block_enqueue_scripts() {
-	// Only enqueue if the block is used on the page.
 	if ( has_block( 'opensensemap-block/opensensemap-block' ) ) {
-		// Pass API settings to frontend JavaScript.
 		wp_localize_script(
 			'opensensemap-block-opensensemap-block-view-script',
 			'opensensemapBlockApiSettings',
@@ -91,12 +68,11 @@ function opensensemap_block_register_api_routes() {
 		return;
 	}
 
-	// Remove the leading slash from the route.
 	register_rest_route(
 		'opensensemap-block/v1',
-		'opensensemap/(?P<id>[\w-]+)', // Simplified pattern.
+		'opensensemap/(?P<id>[\w-]+)',
 		array(
-			'methods'             => array( 'GET' ), // Array of methods for better compatibility.
+			'methods'             => array( 'GET' ),
 			'callback'            => 'opensensemap_block_get_opensensemap_data',
 			'permission_callback' => '__return_true',
 			'args'                => array(
@@ -111,8 +87,6 @@ function opensensemap_block_register_api_routes() {
 		)
 	);
 }
-
-// Only register on rest_api_init.
 add_action( 'rest_api_init', 'opensensemap_block_register_api_routes' );
 
 /**
@@ -133,10 +107,8 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			);
 		}
 
-		// Set up API URL.
 		$api_url = 'https://api.opensensemap.org/boxes/' . $box_id;
 
-		// Get transient first to avoid unnecessary API calls.
 		$cache_key   = 'opensensemap_data_' . $box_id;
 		$cached_data = get_transient( $cache_key );
 
@@ -144,7 +116,6 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			return rest_ensure_response( $cached_data );
 		}
 
-		// Make API request.
 		$response = wp_remote_get(
 			$api_url,
 			array(
@@ -153,7 +124,6 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			)
 		);
 
-		// Check for errors.
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error(
 				'api_error',
@@ -162,7 +132,6 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			);
 		}
 
-		// Check response code.
 		$response_code = wp_remote_retrieve_response_code( $response );
 		if ( 200 !== $response_code ) {
 			return new WP_Error(
@@ -176,7 +145,6 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			);
 		}
 
-		// Get response body.
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 
@@ -188,18 +156,15 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			);
 		}
 
-		// Transform the data into our expected format.
 		$transformed_data = array(
 			'currentLocation'   => $data['name'] ?? '',
 			'lastMeasurementAt' => $data['lastMeasurementAt'] ?? '',
 			'sensors'           => array(),
 		);
 
-		// Process sensors.
 		if ( ! empty( $data['sensors'] ) ) {
 			foreach ( $data['sensors'] as $sensor ) {
 				$sensor_name = $sensor['title'] ?? $sensor['sensorType'] ?? '';
-				// Translate German sensor names to English.
 				$sensor_name = opensensemap_block_translate_sensor_name( $sensor_name );
 
 				$transformed_data['sensors'][] = array(
@@ -214,7 +179,6 @@ function opensensemap_block_get_opensensemap_data( $request ) {
 			}
 		}
 
-		// Cache the transformed data for 5 minutes.
 		set_transient( $cache_key, $transformed_data, 5 * MINUTE_IN_SECONDS );
 
 		return rest_ensure_response( $transformed_data );

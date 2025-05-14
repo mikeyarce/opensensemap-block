@@ -3,33 +3,18 @@
  *
  */
 
-// Define Lucide-style SVG icons
-const icons = {
-	thermometer:
-		'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-thermometer"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg>',
-	humidity:
-		'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-droplets"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97"/></svg>',
-	cloud:
-		'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cloud"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>',
-	chart:
-		'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-line-chart"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>',
-};
+import icons from './icons.js';
 
 const customWindow = window;
 
 document.addEventListener('DOMContentLoaded', function () {
-	// Get API settings from the data attribute
 	const apiSettings = customWindow.opensensemapBlockApiSettings || {};
 
-	// Check if API settings are available
 	if (! apiSettings.root || ! apiSettings.nonce) {
 		return;
 	}
-
-	// Find all sensor data blocks on the page
 	const sensorBlocks = document.querySelectorAll('.wp-block-opensensemap-block-opensensemap-block');
 
-	// Process each block
 	sensorBlocks.forEach(block => {
 		const element = block;
 
@@ -91,14 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	 * @return {void}
 	 */
 	function renderSensorData(block, data, displayName, displayLocation, displayTimestamp) {
-		// Clear loading message
 		block.innerHTML = '';
-
-		// Create container
 		const container = document.createElement('div');
 		container.className = 'sensor-data-block';
 
-		// Add location if enabled
 		if (displayLocation && data.currentLocation) {
 			const headerEl = document.createElement('div');
 			headerEl.className = 'sensor-data-header';
@@ -111,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			container.appendChild(headerEl);
 		}
 
-		// Add sensor readings
 		if (data.sensors && data.sensors.length > 0) {
 			const gridEl = document.createElement('div');
 			gridEl.className = 'sensor-data-grid';
@@ -126,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			container.appendChild(gridEl);
 		}
 
-		// Add timestamp if enabled
 		if (displayTimestamp && data.lastMeasurementAt) {
 			const timestampContainer = document.createElement('div');
 			timestampContainer.className = 'sensor-data-timestamp-container';
@@ -161,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		const sensorEl = document.createElement('div');
 		sensorEl.className = 'sensor-card';
 
-		// Add sensor name if enabled
 		if (displayName && name) {
 			const titleEl = document.createElement('h4');
 			titleEl.className = 'sensor-title';
@@ -169,11 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
 			sensorEl.appendChild(titleEl);
 		}
 
-		// Add sensor value with icon
 		const valueEl = document.createElement('div');
 		valueEl.className = 'sensor-value';
 
-		// Determine icon based on sensor type or explicit icon
 		let iconSvg;
 
 		if (icon === 'thermometer' || name.toLowerCase().includes('temp')) {
