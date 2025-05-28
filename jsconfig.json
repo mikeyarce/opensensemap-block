@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 	  "baseUrl": ".",
-	  "jsx": "react",
+	  "jsx": "react-jsx",
 	  "checkJs": true,
 	  "moduleResolution": "node",
 	  "target": "es2020",

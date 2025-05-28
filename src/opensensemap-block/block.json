@@ -46,13 +46,5 @@
 			"type": "number",
 			"default": 300
 		}
-	},
-	"example": {
-		"attributes": {
-			"sensorBoxId": "sample-id",
-			"displayName": true,
-			"displayLocation": true,
-			"displayTimestamp": true
-		}
 	}
 }

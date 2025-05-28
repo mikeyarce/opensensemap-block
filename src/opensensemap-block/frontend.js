@@ -1,38 +1,42 @@
 /**
  * Frontend JavaScript for OpenSenseMap Block
- *
  */
 
-import icons from './icons.js';
+/**
+ * WordPress dependencies
+ */
+import { createRoot } from '@wordpress/element';
 
-const customWindow = window;
+/**
+ * Internal dependencies
+ */
+import { SensorDisplay } from './components/SensorDisplay';
+import { useSensorData } from './hooks/useSensorData';
 
-document.addEventListener('DOMContentLoaded', function () {
-	const apiSettings = customWindow.opensensemapBlockApiSettings || {};
+document.addEventListener( 'DOMContentLoaded', () => {
+	const sensorBlocks = document.querySelectorAll( '.wp-block-opensensemap-block-opensensemap-block' );
 
-	if (! apiSettings.root || ! apiSettings.nonce) {
-		return;
-	}
-	const sensorBlocks = document.querySelectorAll('.wp-block-opensensemap-block-opensensemap-block');
-
-	sensorBlocks.forEach(block => {
+	sensorBlocks.forEach( ( block ) => {
+		if ( ! ( block instanceof HTMLElement ) ) {
+			return;
+		}
 		const element = block;
 
-		const boxId = element.getAttribute('data-sensor-box-id');
-		const displayName = element.getAttribute('data-display-name') === 'true';
-		const displayLocation = element.getAttribute('data-display-location') === 'true';
-		const displayTimestamp = element.getAttribute('data-display-timestamp') === 'true';
+		const boxId = element.getAttribute( 'data-sensor-box-id' );
+		const displayName = element.getAttribute( 'data-display-name' ) === 'true';
+		const displayLocation = element.getAttribute( 'data-display-location' ) === 'true';
+		const displayTimestamp = element.getAttribute( 'data-display-timestamp' ) === 'true';
 
-		if (! boxId) {
-			renderError(element, 'No sensor box ID provided');
+		if ( ! boxId ) {
+			renderError( element, 'No sensor box ID provided' );
 			return;
 		}
 
-		fetchSensorData(element, boxId, displayName, displayLocation, displayTimestamp);
-	});
+		initializeSensorBlock( element, boxId, displayName, displayLocation, displayTimestamp );
+	} );
 
 	/**
-	 * Fetch sensor data from the WordPress REST API endpoint
+	 * Initialize a sensor block with React
 	 *
 	 * @param {HTMLElement} block            - The block element to update
 	 * @param {string}      boxId            - The sensor box ID to fetch data for
@@ -41,146 +45,33 @@ document.addEventListener('DOMContentLoaded', function () {
 	 * @param {boolean}     displayTimestamp - Whether to display timestamps
 	 * @return {void}
 	 */
-	function fetchSensorData(block, boxId, displayName, displayLocation, displayTimestamp) {
-		const apiUrl = `${apiSettings.root}opensensemap-block/v1/opensensemap/${boxId}`;
+	function initializeSensorBlock( block, boxId, displayName, displayLocation, displayTimestamp ) {
+		// Create a React component to use our hook and render the display
+		const SensorBlockComponent = () => {
+			// Use our custom hook to fetch and manage sensor data
+			const { data, isLoading, error } = useSensorData( boxId );
 
-		fetch(apiUrl, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': apiSettings.nonce,
-			},
-		})
-			.then(response => {
-				if (! response.ok) {
-					throw new Error('Network response was not ok');
-				}
-				return response.json();
-			})
-			.then(data => {
-				renderSensorData(block, data, displayName, displayLocation, displayTimestamp);
-			})
-			.catch(error => {
-				renderError(block, error.message || 'Failed to fetch sensor data');
-			});
+			return (
+				<SensorDisplay
+					data={ data }
+					displayName={ displayName }
+					displayLocation={ displayLocation }
+					displayTimestamp={ displayTimestamp }
+					isLoading={ isLoading }
+					error={ error }
+				/>
+			);
+		};
+
+		// Create a root for React to render into
+		const root = createRoot( block );
+
+		// Render our component
+		root.render( <SensorBlockComponent /> );
 	}
 
-	/**
-	 * Render sensor data in the block
-	 *
-	 * @param {HTMLElement} block            - The block element to update
-	 * @param {Object}      data             - The sensor data to render
-	 * @param {boolean}     displayName      - Whether to display the sensor box name
-	 * @param {boolean}     displayLocation  - Whether to display the sensor location
-	 * @param {boolean}     displayTimestamp - Whether to display timestamps
-	 * @return {void}
-	 */
-	function renderSensorData(block, data, displayName, displayLocation, displayTimestamp) {
-		block.innerHTML = '';
-		const container = document.createElement('div');
-		container.className = 'sensor-data-block';
-
-		if (displayLocation && data.currentLocation) {
-			const headerEl = document.createElement('div');
-			headerEl.className = 'sensor-data-header';
-
-			const locationEl = document.createElement('h3');
-			locationEl.className = 'sensor-data-location';
-			locationEl.textContent = data.currentLocation;
-			headerEl.appendChild(locationEl);
-
-			container.appendChild(headerEl);
-		}
-
-		if (data.sensors && data.sensors.length > 0) {
-			const gridEl = document.createElement('div');
-			gridEl.className = 'sensor-data-grid';
-
-			data.sensors.forEach(sensor => {
-				const sensorEl = renderSensorItem(sensor, displayName);
-				if (sensorEl) {
-					gridEl.appendChild(sensorEl);
-				}
-			});
-
-			container.appendChild(gridEl);
-		}
-
-		if (displayTimestamp && data.lastMeasurementAt) {
-			const timestampContainer = document.createElement('div');
-			timestampContainer.className = 'sensor-data-timestamp-container';
-
-			const timestampEl = document.createElement('span');
-			timestampEl.className = 'sensor-data-timestamp';
-			timestampEl.textContent = `Last updated: ${new Date(
-				data.lastMeasurementAt
-			).toLocaleString()}`;
-			timestampContainer.appendChild(timestampEl);
-
-			container.appendChild(timestampContainer);
-		}
-
-		block.appendChild(container);
-	}
-
-	/**
-	 * Render a single sensor item
-	 *
-	 * @param {Object}  sensor      - The sensor data to render
-	 * @param {boolean} displayName - Whether to display the sensor name
-	 * @return {HTMLElement|null} The rendered sensor element or null if no measurement
-	 */
-	function renderSensorItem(sensor, displayName) {
-		if (! sensor.lastMeasurement) {
-			return null;
-		}
-
-		const { name, unit, lastMeasurement, icon } = sensor;
-
-		const sensorEl = document.createElement('div');
-		sensorEl.className = 'sensor-card';
-
-		if (displayName && name) {
-			const titleEl = document.createElement('h4');
-			titleEl.className = 'sensor-title';
-			titleEl.textContent = name;
-			sensorEl.appendChild(titleEl);
-		}
-
-		const valueEl = document.createElement('div');
-		valueEl.className = 'sensor-value';
-
-		let iconSvg;
-
-		if (icon === 'thermometer' || name.toLowerCase().includes('temp')) {
-			iconSvg = icons.thermometer;
-		} else if (icon === 'humidity' || name.toLowerCase().includes('humid')) {
-			iconSvg = icons.humidity;
-		} else if (icon === 'cloud' || name.toLowerCase().includes('pm')) {
-			iconSvg = icons.cloud;
-		} else {
-			iconSvg = icons.chart;
-		}
-
-		const iconEl = document.createElement('span');
-		iconEl.className = 'sensor-icon';
-		iconEl.innerHTML = iconSvg;
-		valueEl.appendChild(iconEl);
-
-		const valueNumberEl = document.createElement('span');
-		valueNumberEl.className = 'sensor-value-number';
-		valueNumberEl.textContent = lastMeasurement.value;
-
-		const unitEl = document.createElement('span');
-		unitEl.className = 'sensor-value-unit';
-		unitEl.textContent = unit;
-		valueNumberEl.appendChild(unitEl);
-
-		valueEl.appendChild(valueNumberEl);
-		sensorEl.appendChild(valueEl);
-
-		return sensorEl;
-	}
+	// Note: We're now using the useSensorData hook instead of this function
+	// The API settings are configured in the utils/api.js file
 
 	/**
 	 * Render an error message in the block
@@ -189,13 +80,13 @@ document.addEventListener('DOMContentLoaded', function () {
 	 * @param {string}      message - The error message to display
 	 * @return {void}
 	 */
-	function renderError(block, message) {
+	function renderError( block, message ) {
 		block.innerHTML = '';
 
-		const errorEl = document.createElement('div');
+		const errorEl = document.createElement( 'div' );
 		errorEl.className = 'components-notice is-error';
-		errorEl.textContent = `Error: ${message}`;
+		errorEl.textContent = `Error: ${ message }`;
 
-		block.appendChild(errorEl);
+		block.appendChild( errorEl );
 	}
-});
+} );
