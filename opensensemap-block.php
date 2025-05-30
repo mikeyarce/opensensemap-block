@@ -22,25 +22,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Register block types.
  */
 function opensensemap_block_block_init() {
-	// Set up the API endpoint URL for the block
-	$api_endpoint = rest_url( 'opensensemap-block/v1/opensensemap/' );
-
-	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-		wp_register_block_types_from_metadata_collection( 
-			__DIR__ . '/build', 
-			__DIR__ . '/build/blocks-manifest.php'
-		);
+	// Modern WordPress (5.8+)
+	if ( function_exists( 'register_block_type_from_metadata' ) ) {
+		register_block_type_from_metadata( __DIR__ . '/build/opensensemap-block' );
 		return;
 	}
-
-	if ( function_exists( 'wp_register_block_metadata_collection' ) ) {
-		wp_register_block_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
-	}
-
-	$manifest_data = require __DIR__ . '/build/blocks-manifest.php';
-	foreach ( array_keys( $manifest_data ) as $block_type ) {
-		register_block_type( __DIR__ . "/build/{$block_type}" );
-	}
+	// Fallback for older versions of WordPress
+	register_block_type( 'opensensemap-block/sensor-display', array(
+		'editor_script' => 'opensensemap-block-editor',
+		'editor_style'  => 'opensensemap-block-editor-style',
+		'style'         => 'opensensemap-block-style',
+		'script'        => 'opensensemap-block-script'
+	));
 }
 add_action( 'init', 'opensensemap_block_block_init' );
 
@@ -48,9 +41,9 @@ add_action( 'init', 'opensensemap_block_block_init' );
  * Enqueue scripts.
  */
 function opensensemap_block_enqueue_scripts() {
-	if ( has_block( 'opensensemap-block/opensensemap-block' ) ) {
+	if ( has_block( 'opensensemap-block/sensor-display' ) ) {
 		wp_localize_script(
-			'opensensemap-block-opensensemap-block-view-script',
+			'opensensemap-block-sensor-display-view-script',
 			'opensensemapBlockApiSettings',
 			array(
 				'root'  => esc_url_raw( rest_url() ),
