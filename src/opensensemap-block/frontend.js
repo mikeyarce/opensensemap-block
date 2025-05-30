@@ -14,7 +14,7 @@ import { SensorDisplay } from './components/SensorDisplay';
 import { useSensorData } from './hooks/useSensorData';
 
 document.addEventListener( 'DOMContentLoaded', () => {
-	const sensorBlocks = document.querySelectorAll( '.wp-block-opensensemap-block-opensensemap-block' );
+	const sensorBlocks = document.querySelectorAll( '.wp-block-opensensemap-block-sensor-display' );
 
 	sensorBlocks.forEach( ( block ) => {
 		if ( ! ( block instanceof HTMLElement ) ) {

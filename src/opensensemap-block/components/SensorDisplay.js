@@ -21,7 +21,7 @@ import icons from '../icons';
  */
 export const SensorIcon = ( { icon, iconName } ) => (
 	<span
-		className="sensor-icon"
+		className="opensensemap-block__sensor-icon"
 		aria-label={ iconName || 'Sensor icon' }
 		title={ iconName || 'Sensor icon' }
 		dangerouslySetInnerHTML={ { __html: icon } }
@@ -56,11 +56,11 @@ export const SensorValue = ( { sensor } ) => {
 	const iconSvg = icons[ iconKey ];
 
 	return (
-		<div className="sensor-value">
+		<div className="opensensemap-block__sensor-value">
 			<SensorIcon icon={ iconSvg } iconName={ name } />
-			<span className="sensor-value-number">
+			<span className="opensensemap-block__sensor-value-number">
 				{ lastMeasurement.value }
-				<span className="sensor-value-unit">{ unit }</span>
+				<span className="opensensemap-block__sensor-value-unit">{ unit }</span>
 			</span>
 		</div>
 	);
@@ -88,49 +88,55 @@ export const SensorDisplay = ( {
 } ) => {
 	if ( error ) {
 		return (
-			<div className="components-notice is-error">
-				{ error }
+			<div className="opensensemap-block opensensemap-block--error">
+				<div className="opensensemap-block__error">
+					{ error }
+				</div>
 			</div>
 		);
 	}
 
 	if ( isLoading ) {
 		return (
-			<div className="loading-placeholder">
-				{ __( 'Loading sensor data…', 'opensensemap-block' ) }
+			<div className="opensensemap-block opensensemap-block--loading">
+				<div className="opensensemap-block__loading">
+					{ __( 'Loading sensor data…', 'opensensemap-block' ) }
+				</div>
 			</div>
 		);
 	}
 
 	if ( ! data ) {
 		return (
-			<div className="empty-placeholder">
-				{ __( 'Enter a Sensor Box ID in the block settings', 'opensensemap-block' ) }
+			<div className="opensensemap-block opensensemap-block--empty">
+				<div className="opensensemap-block__empty-message">
+					{ __( 'Enter a Sensor Box ID in the block settings', 'opensensemap-block' ) }
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="sensor-data-block">
+		<div className="opensensemap-block">
 			{ displayLocation && data.currentLocation && (
-				<div className="sensor-data-header">
-					<h3 className="sensor-data-location">{ data.currentLocation }</h3>
-				</div>
+				<header className="opensensemap-block__header">
+					<h3 className="opensensemap-block__location">{ data.currentLocation }</h3>
+				</header>
 			) }
-			<div className="sensor-data-grid">
+			<div className="opensensemap-block__grid">
 				{ data.sensors && data.sensors.map( ( sensor ) => (
-					<div key={ sensor.name } className="sensor-card">
-						{ displayName && <h4 className="sensor-title">{ sensor.name }</h4> }
+					<div key={ sensor.name } className="opensensemap-block__card">
+						{ displayName && <h4 className="opensensemap-block__card-title">{ sensor.name }</h4> }
 						<SensorValue sensor={ sensor } />
 					</div>
 				) ) }
 			</div>
 			{ displayTimestamp && data.lastMeasurementAt && (
-				<div className="sensor-data-timestamp-container">
-					<span className="sensor-data-timestamp">
-						Last updated: { new Date( data.lastMeasurementAt ).toLocaleString() }
-					</span>
-				</div>
+				<footer className="opensensemap-block__footer">
+					<time className="opensensemap-block__timestamp">
+						{ __( 'Last updated:', 'opensensemap-block' ) } { new Date( data.lastMeasurementAt ).toLocaleString() }
+					</time>
+				</footer>
 			) }
 		</div>
 	);
